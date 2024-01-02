@@ -38,9 +38,15 @@ Route::get('/user/campaign', [CampaignController::class, 'userCampaigns'])->midd
 
 Route::group(['middleware'=>'auth:sanctum', 'prefix'=>'campaign'], function(){
     Route::post('/create', [CampaignController::class, 'create']);
+    Route::put('/update/{campaignId}', [CampaignController::class, 'update']);
+    Route::delete('/delete/{campaignId}', [CampaignController::class, 'deleteCampaign']);
     Route::get('/close', [CampaignController::class, 'closeCampaign']);
-    Route::post('/donate', [DonationController::class, 'donate']);
     Route::get('/donations/{campaignId}', [DonationController::class, 'campaignDonations']);
+});
+
+Route::group(['middleware'=>'auth:sanctum', 'prefix'=>'donation'], function(){
+    Route::post('/', [DonationController::class, 'donate']);
+    Route::get('/{donationId}', [DonationController::class, 'getDonation']);
 });
 
 

@@ -13,9 +13,6 @@ class DonationController extends Controller
 {
     protected $authUser;
 
-    public function __construct(Request $request) {
-        $this->authUser = $request->user();
-    }
     /**
      * TODO
      * Making a donation to running funding campaign
@@ -54,6 +51,8 @@ class DonationController extends Controller
         $todayDate = Carbon::today()->format('Y-m-d');
 
         if ($campaignCloseDate <= $todayDate){
+            $campaign->status = "close";
+            $campaign->save();
             return $this->sendBadRequestResponse('Donation cannot be made for campaign is closed');
         }
 
@@ -88,6 +87,16 @@ class DonationController extends Controller
                                 ->select('users.id', 'users.name  AS donatorName', 'users.email As donatorEmail', 'donations.*','campaigns.id', 'campaigns.name AS campaignName', 'campaigns.description AS campaignDescription')
                                 ->get();
         return $this->sendSuccessResponse($campaignDonations, 'Donations fetched');
+      }
+
+      /**
+       * TODO
+       * get donation
+       */
+      public function getDonation(int $donationId)
+      {
+        $donation = Donation::find($donationId)->user;
+        return $this->sendSuccessResponse($donation, 'Donation details fetched');
       }
 
 }

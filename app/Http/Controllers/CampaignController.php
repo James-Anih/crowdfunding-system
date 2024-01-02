@@ -51,6 +51,35 @@ class CampaignController extends Controller
         
      }
 
+     public function update(Request $request, int $campaignId)
+     {
+        $campaign = Campaign::where(['id'=>$campaignId, 'userId'=>$request->user()->id])->first();
+
+        if(!$campaign){
+            return $this->sendBadRequestResponse('Campaign not found');
+        }
+
+        if($request->get('closeDate')){
+            $inputDate = Carbon::parse($request->get('closeDate'))->format('Y-m-d');
+            $todayDate = Carbon::today()->format('Y-m-d');
+
+            if($inputDate < $todayDate){
+                return $this->sendBadRequestResponse('The closeDate must be valid date.');
+            }
+
+            if($inputDate === $todayDate){
+                return $this->sendBadRequestResponse("The closeDate must not be equal to today's date.");
+            }
+        }
+        $campaign->name = $request->get('name') ? $request->get('name'): $campaign->name;
+        $campaign->description = $request->get('description') ? $request->get('description'): $campaign->description;
+        $campaign->targetAmount = $request->get('targetAmount')? $request->get('targetAmount'):$campaign->targetAmount;
+        $campaign->closeDate = $request->get('closeDate')? $request->get('closeDate'):$campaign->closeDate;
+        $campaign->status = $request->get('status')?$request->get('status'):$campaign->status;
+        $campaign->save();
+
+        return $this->sendSuccessResponse($campaign, "Campaign updated successfully");
+     }
     
      /**
       * TODO
@@ -59,7 +88,7 @@ class CampaignController extends Controller
 
      public function campaigns()
      {
-        $campaigns = Campaign::where('status','open')->get();
+        $campaigns = Campaign::where('status','open')->orderBy('created_at','desc')->get();
         return $this->sendSuccessResponse($campaigns, 'Active campaigns fetched');
      }
 
@@ -70,20 +99,31 @@ class CampaignController extends Controller
       public function userCampaigns(Request $request)
       {
         $user = $request->user();
-        $campaigns = Campaign::where('userId', $user->id)->get();
+        $campaigns = Campaign::where('userId', $user->id)->orderBy('created_at','desc')->get();
         return $this->sendSuccessResponse($campaigns, 'Campaigns fetched');
       }
 
       public function closeCampaign(Request $request,int $campaignId)
       {
         $user = $request->user();
-        $campaign = Campaign::where(['userId'=>$user->id, 'id'=> $campaignId])->get();
+        $campaign = Campaign::where(['userId'=>$user->id, 'id'=> $campaignId])->first();
         if(!$campaign){
             return $this->sendValidationErrorResposnse('Campaign not found');
         }
         $campaign->status = "close";
         $campaign->save();
         return $this->sendSuccessResponse('','Campaign closed successfully');
+      }
+
+      public function deleteCampaign(Request $request, int $campaignId)
+      {
+        $campaign = Campaign::where(['id'=>$campaignId, 'userId'=>$request->user()->id])->first();
+        if(!$campaign){
+            return $this->sendBadRequestResponse('Campaign not found');
+        }
+
+        $campaign->delete();
+        return $this->sendSuccessResponse('', 'Campaign Deleted successfully');
       }
      
 }
