@@ -4,7 +4,7 @@ crowdfunding is an open source crownfunding API.It provides the basic rest api's
 
 
 ## Prerequisites
-- ** Docker
+- **Docker
 - ** Docker Compose
 
 
