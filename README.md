@@ -21,7 +21,7 @@ crowdfunding is an open source crownfunding API.It provides the basic rest api's
     laravelsail/php81-composer:latest \
     composer install --ignore-platform-reqs
   
-- Run ./vendor/bin/sail up -d to start up the application and keep it running at the backgound.
+- Run ./vendor/bin/sail up -d --build to start up the application and keep it running at the backgound.
 - Run ./vendor/bin/sail artisan migrate to setup tables on the database.
 
 
