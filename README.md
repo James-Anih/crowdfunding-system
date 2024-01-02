@@ -11,8 +11,19 @@ crowdfunding is an open source crownfunding API.It provides the basic rest api's
 ## Usage
 - Clone the project via git clone or download the zip file.
 - Go to project directory - cd crownfunding.
-- Run ./vendor/bin/sail up -d --build to install dependencies and starts the project in docker container.
+- Create a .env and copy content from .env.example to the new .env file.
+- Replace the Database connect section of the .env to your mysql variables.
+- Run command below on terminal to setup project dependencies
+  - docker run --rm \
+    -u "$(id -u):$(id -g)" \
+    -v $(pwd):/var/www/html \
+    -w /var/www/html \
+    laravelsail/php81-composer:latest \
+    composer install --ignore-platform-reqs
+  
+- Run ./vendor/bin/sail up -d to start up the application and keep it running at the backgound.
 - Run ./vendor/bin/sail artisan migrate to setup tables on the database.
+
 
 ## Models Explained
 - User
